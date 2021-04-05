@@ -4,6 +4,7 @@ import statistics
 import math
 import time
 import multiprocessing as mp
+import sys
 from multiprocessing import Process, Manager
 
 
@@ -44,13 +45,6 @@ def createDatabase(databaseName):
         host="store.usr.user.hu",
         user="mki",
         password="pwd")
-
-    # connection = mysql.connector.connect(
-    #     pool_name="create_pool",
-    #     pool_size=1,
-    #     host="localhost",
-    #     user="root",
-    #     password="TOmi_1970")
 
     cursor = connection.cursor()
     sqlDropDatabaseScript = "DROP DATABASE IF EXISTS " + databaseName
@@ -509,7 +503,6 @@ def processSubDataset(dataset, resultList):
     tranactionLabels = dataset[:, -1:]
     length = len(transactionFeatures)
     for i in range(length):
-        # print(f'row: {i}')
         transactionFeature = transactionFeatures[i]
         currentCardNumber = math.floor(transactionFeature[0])
         currentTimestamp = transactionFeature[2]
@@ -564,14 +557,14 @@ def processSubDataset(dataset, resultList):
 
 if __name__ == '__main__':
     start = time.time()
+    numberOfCliParameters=len(sys.argv)
+    print(f'Adatbázisok száma: {numberOfCliParameters-1}')
+    databaseNames=list()
+    for i in range(1,numberOfCliParameters):
+        databaseNames.append(sys.argv[i])
+    for i in range(len(databaseNames)):
+        print(f'Feldolgozandó adatbázisok: {databaseNames[i]}')
     cpuCoreCount = mp.cpu_count()
-    # databaseNames = ["card_i"]
-    # databaseNames = ["card_10000_5_i", "card_100000_1_i", "card_250000_02_i", "card_i"]
-    databaseNames = ["card_i"]
-    # databaseNames = ["card_10000_5_1","card_10000_5_2","card_10000_5_3",
-    #                  "card_100000_1_1","card_100000_1_3","card_100000_1_3",
-    #                  "card_250000_02_1", "card_250000_02_2","card_250000_02_3"]
-    # databaseNames = ["card_100000_1_i"]
     for databaseName in databaseNames:
         aggregatedAndImputedDatebaseName = databaseName + "_a_parallel"
         createDatabase(aggregatedAndImputedDatebaseName)
@@ -592,7 +585,6 @@ if __name__ == '__main__':
             for i in range(cpuCoreCount):
                 resultFromProcessesDictionary[i] = manager.list()
                 resultList = resultFromProcessesDictionary.get(i)
-
                 processDictionary[i] = Process(target=processSubDataset, args=(dataGroupCollection[i], resultList))
             for i in range(cpuCoreCount):
                 processDictionary.get(i).start()
@@ -603,7 +595,6 @@ if __name__ == '__main__':
                 datasetFromProcesses.extend(resultFromProcessesDictionary.get(i))
             print(len(datasetFromProcesses))
         saveExtendedDataset(aggregatedAndImputedDatebaseName, datasetFromProcesses)
-
     end = time.time()
     elapsedTime = end - start
     print(f'feldolgozási idő: {elapsedTime}')
