@@ -391,13 +391,13 @@ def getTransacTionIntervalProperties(timestamp, basePropertyCollection):
         nextTimeStamp = timestampCollection[i + 1]
         currentTimeStamp = timestampCollection[i]
         interval = currentTimeStamp - nextTimeStamp
-        if currentTimeStamp>timestamp-3:
+        if currentTimeStamp > timestamp - 3:
             intervalsSince3Days.append(interval)
-        if currentTimeStamp>timestamp-7:
+        if currentTimeStamp > timestamp - 7:
             intervalsSince7Days.append(interval)
-        if currentTimeStamp>timestamp-15:
+        if currentTimeStamp > timestamp - 15:
             intervalsSince15Days.append(interval)
-        if currentTimeStamp-30:
+        if currentTimeStamp > timestamp - 30:
             intervalsSince30Days.append(interval)
         intervalsSinceFirstDay.append(interval)
 
@@ -552,7 +552,6 @@ def processSubDataset(dataset, resultList):
         transactionFeatureList.append(label)
         extendedDataset.append(transactionFeatureList)
     resultList.extend(extendedDataset)
-    # return extendedDataset
 
 
 if __name__ == '__main__':
@@ -563,7 +562,7 @@ if __name__ == '__main__':
     for i in range(1,numberOfCliParameters):
         databaseNames.append(sys.argv[i])
     for i in range(len(databaseNames)):
-        print(f'Feldolgozandó adatbázisok: {databaseNames[i]}')
+        print(f'Feldolgozandó adatbázis: {databaseNames[i]}')
     cpuCoreCount = mp.cpu_count()
     for databaseName in databaseNames:
         aggregatedAndImputedDatebaseName = databaseName + "_a_parallel"
